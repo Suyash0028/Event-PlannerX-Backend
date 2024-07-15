@@ -28,24 +28,23 @@ const loginUser = async (req, res) => {
 };
 
 const updateUserProfile = async (req, res) => {
-    const { name, email } = req.body;
-    console.log(req.user.id);
+    const { username, email } = req.body;
     let profilePic = req.body.profilePic; // Assuming profilePic is sent as a URL or base64 data
 
     try {
         const user = await User.findById(req.user.id);
-        
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        user.name = name || user.name;
+        user.username = username || user.username;
         user.email = email || user.email;
 
         if (profilePic) {
             user.profilePic = profilePic;
         }
-
+        console.log(user);
         await user.save();
 
         res.status(200).json({ message: 'Profile updated successfully', user });
