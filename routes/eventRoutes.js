@@ -1,6 +1,5 @@
 // routes/eventRoutes.js
 const express = require('express');
-const Event = require('../models/Event');
 const { getEvents, createEvent, updateEvent, deleteEvent, getEventById, getMyEvents } = require('../controllers/eventController');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
