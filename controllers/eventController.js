@@ -1,5 +1,6 @@
 // controllers/eventController.js
 const Event = require('../models/Event');
+const mongoose = require('mongoose');
 
 const getEvents = async (req, res) => {
   try {
@@ -51,4 +52,39 @@ const deleteEvent = async (req, res) => {
   }
 };
 
-module.exports = { getEvents, createEvent, updateEvent, deleteEvent };
+const getEventById = async (req, res) => {
+  try {
+      const eventId = req.params.id;
+
+      if (!mongoose.Types.ObjectId.isValid(eventId)) {
+          return res.status(400).json({ message: 'Invalid event ID' });
+      }
+
+      const event = await Event.findById(eventId).populate('organizer', 'username');
+
+      if (!event) {
+          return res.status(404).json({ message: 'Event not found' });
+      }
+
+      res.json(event);
+  } catch (error) {
+      console.error('Error fetching event:', error);
+      res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const getMyEvents = async (req, res) => {
+  try {
+      const userId = req.user._id;
+      if (!userId) {
+          return res.status(400).json({ message: 'User not authenticated' });
+      }
+
+      const events = await Event.find({ organizer: userId }).populate('organizer', 'username');
+      res.json(events);
+  } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { getEvents, createEvent, updateEvent, deleteEvent, getEventById, getMyEvents };
